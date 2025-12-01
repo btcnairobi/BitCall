@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Category, BookingState } from './types';
 import { CategorySelector } from './components/CategorySelector';
 import { DateTimeSelector } from './components/DateTimeSelector';
 import { MessageReview } from './components/MessageReview';
 import { StepIndicator } from './components/StepIndicator';
-import { Bitcoin, ShieldCheck, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Phone, ShieldCheck, ChevronRight, ChevronLeft } from 'lucide-react';
 
 const App: React.FC = () => {
   const [step, setStep] = useState(1);
@@ -13,6 +13,8 @@ const App: React.FC = () => {
     date: null,
     time: null
   });
+  
+  const confirmButtonRef = useRef<HTMLButtonElement>(null);
 
   const handleCategorySelect = (category: Category) => {
     setBooking(prev => ({ ...prev, category }));
@@ -26,10 +28,32 @@ const App: React.FC = () => {
 
   const handleTimeSelect = (time: string) => {
     setBooking(prev => ({ ...prev, time }));
+    
+    // Smooth scroll to the confirm button after a short delay to allow state update
+    setTimeout(() => {
+      confirmButtonRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
   };
 
   const handleNext = () => {
-    if (step < 3) setStep(step + 1);
+    if (step < 3) {
+      setStep(step + 1);
+      // Scroll behavior for step 3 handled in useEffect or via immediate scroll here
+      if (step + 1 === 3) {
+        // We want to scroll to bottom then up, but standard behavior usually renders top first.
+        // Let's scroll to top of main content to ensure visibility.
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        // Specific requirement: "start from down to up scroll automatically"
+        // We simulate this by scrolling to bottom immediately then smoothing to top
+        setTimeout(() => {
+           window.scrollTo({ top: document.body.scrollHeight, behavior: 'auto' });
+           setTimeout(() => {
+             window.scrollTo({ top: 0, behavior: 'smooth' });
+           }, 100);
+        }, 50);
+      }
+    }
   };
 
   const handleBack = () => {
@@ -53,10 +77,10 @@ const App: React.FC = () => {
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="bg-white border-2 border-black p-1.5 rounded-lg text-bitcoin shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-              <Bitcoin size={24} strokeWidth={3} />
+              <Phone size={24} strokeWidth={3} />
             </div>
             <h1 className="text-2xl font-black tracking-tight text-white drop-shadow-sm">
-              Bit<span className="text-black">Call</span>
+              BT<span className="text-black">Call</span>
             </h1>
           </div>
           <div className="hidden sm:flex items-center gap-2 text-xs font-bold text-black border-2 border-black bg-white px-3 py-1.5 rounded-full shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
@@ -103,6 +127,7 @@ const App: React.FC = () => {
                   <ChevronLeft size={24} strokeWidth={3} /> Back
                 </button>
                 <button 
+                  ref={confirmButtonRef}
                   onClick={handleNext}
                   disabled={!isStep2Valid}
                   className={`flex items-center gap-2 px-8 py-3 rounded-xl font-black border-2 border-black transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-1 hover:shadow-none ${
@@ -133,7 +158,7 @@ const App: React.FC = () => {
       <footer className="py-8 mt-auto">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <p className="text-black/60 font-semibold text-sm">
-            &copy; {new Date().getFullYear()} BitCall. All rights reserved.
+            &copy; {new Date().getFullYear()} BTCall. All rights reserved.
           </p>
         </div>
       </footer>
