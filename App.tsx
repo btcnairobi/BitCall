@@ -67,7 +67,6 @@ const App: React.FC = () => {
   };
 
   // Validation to enable Next button
-  const isStep1Valid = !!booking.category;
   const isStep2Valid = !!booking.date && !!booking.time;
 
   return (

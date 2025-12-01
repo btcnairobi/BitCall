@@ -60,7 +60,7 @@ export const MessageReview: React.FC<MessageReviewProps> = ({ booking, onReset }
     performCopy();
   };
 
-  const handlePlatformClick = (getLink: (msg: string) => string, name: string) => {
+  const handlePlatformClick = (getLink: (msg: string) => string) => {
     // 1. Auto-copy to clipboard to ensure seamless experience (esp for Telegram)
     performCopy();
 
@@ -133,7 +133,7 @@ export const MessageReview: React.FC<MessageReviewProps> = ({ booking, onReset }
           {SOCIAL_PLATFORMS.map((platform) => (
             <button
               key={platform.name}
-              onClick={() => handlePlatformClick(platform.getLink, platform.name)}
+              onClick={() => handlePlatformClick(platform.getLink)}
               className={clsx(
                 "flex items-center justify-center gap-3 p-4 rounded-xl font-black text-white transition-all border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-y-[4px]",
                 platform.color
