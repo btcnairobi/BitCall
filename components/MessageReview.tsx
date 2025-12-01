@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { BookingState, Category } from '../types';
+import { BookingState } from '../types';
 import { format } from 'date-fns';
 import { Copy, Check, MessageSquare } from 'lucide-react';
 import { SOCIAL_PLATFORMS, OFFICIAL_NUMBERS } from '../constants';
 import { clsx } from 'clsx';
+import confetti from 'canvas-confetti';
 
 interface MessageReviewProps {
   booking: BookingState;
@@ -18,22 +19,86 @@ export const MessageReview: React.FC<MessageReviewProps> = ({ booking, onReset }
   const dateStr = format(booking.date, 'EEEE, MMMM do, yyyy');
   
   // The core message template
-  const rawMessage = `Hi Martin,\n\nI'd like to book a call regarding ${booking.category}.\n\n📅 Date: ${dateStr}\n⏰ Time: ${booking.time}\n\nLooking forward to connecting!`;
+  const rawMessage = `Hi Mutonga,\n\nI'd like to book a call regarding ${booking.category}.\n\n📅 Date: ${dateStr}\n⏰ Time: ${booking.time}\n\nLooking forward to connecting!`;
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(rawMessage);
+  const performCopy = async () => {
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(rawMessage);
+      } else {
+        throw new Error('Clipboard API unavailable');
+      }
+    } catch (err) {
+      // Fallback for older browsers or non-secure contexts
+      try {
+        const textArea = document.createElement("textarea");
+        textArea.value = rawMessage;
+        
+        // Ensure textarea is not visible but part of DOM
+        textArea.style.position = "fixed";
+        textArea.style.left = "-9999px";
+        textArea.style.top = "0";
+        document.body.appendChild(textArea);
+        
+        textArea.focus();
+        textArea.select();
+        
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textArea);
+        
+        if (!successful) throw new Error('Fallback copy failed');
+      } catch (fallbackErr) {
+        console.error('Copy failed completely', fallbackErr);
+      }
+    }
+    
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleCopy = () => {
+    performCopy();
+  };
+
   const handlePlatformClick = (getLink: (msg: string) => string, name: string) => {
-    if (name === "Instagram") {
-      // Special handling for IG - copy text first then open
-      handleCopy();
-      window.open(getLink(rawMessage), '_blank');
-    } else {
-      window.open(getLink(rawMessage), '_blank');
-    }
+    // 1. Auto-copy to clipboard to ensure seamless experience (esp for Telegram)
+    performCopy();
+
+    // 2. Trigger celebration confetti
+    confetti({
+      particleCount: 150,
+      spread: 70,
+      origin: { y: 0.7 },
+      colors: ['#F7931A', '#000000', '#FFFFFF']
+    });
+
+    // 3. Fire extra glitter rain
+    const duration = 2000;
+    const end = Date.now() + duration;
+
+    (function frame() {
+      confetti({
+        particleCount: 3,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0 },
+        colors: ['#F7931A', '#000000']
+      });
+      confetti({
+        particleCount: 3,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1 },
+        colors: ['#F7931A', '#000000']
+      });
+
+      if (Date.now() < end) {
+        requestAnimationFrame(frame);
+      }
+    }());
+
+    // 4. Open the platform link
+    window.open(getLink(rawMessage), '_blank');
   };
 
   return (
@@ -79,9 +144,6 @@ export const MessageReview: React.FC<MessageReviewProps> = ({ booking, onReset }
             </button>
           ))}
         </div>
-        <p className="text-xs text-center text-black font-semibold mt-2 opacity-70">
-          *For Instagram, the message will be copied to your clipboard automatically.
-        </p>
       </div>
 
       {/* Trust & Safety Section */}

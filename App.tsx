@@ -16,6 +16,21 @@ const App: React.FC = () => {
   
   const confirmButtonRef = useRef<HTMLButtonElement>(null);
 
+  // Handle Scroll Automations based on Step changes
+  useEffect(() => {
+    if (step === 3) {
+      // For Step 3: Jump to bottom, then smooth scroll to top
+      // This creates the "reading from down to up" effect
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'instant' });
+      requestAnimationFrame(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    } else {
+      // For other steps, just ensure we start at the top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [step]);
+
   const handleCategorySelect = (category: Category) => {
     setBooking(prev => ({ ...prev, category }));
     // Auto advance after short delay for smooth UX
@@ -24,6 +39,7 @@ const App: React.FC = () => {
 
   const handleDateSelect = (date: Date) => {
     setBooking(prev => ({ ...prev, date, time: null })); // Reset time if date changes
+    // Scroll to Time section is handled within DateTimeSelector component
   };
 
   const handleTimeSelect = (time: string) => {
@@ -38,21 +54,6 @@ const App: React.FC = () => {
   const handleNext = () => {
     if (step < 3) {
       setStep(step + 1);
-      // Scroll behavior for step 3 handled in useEffect or via immediate scroll here
-      if (step + 1 === 3) {
-        // We want to scroll to bottom then up, but standard behavior usually renders top first.
-        // Let's scroll to top of main content to ensure visibility.
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        
-        // Specific requirement: "start from down to up scroll automatically"
-        // We simulate this by scrolling to bottom immediately then smoothing to top
-        setTimeout(() => {
-           window.scrollTo({ top: document.body.scrollHeight, behavior: 'auto' });
-           setTimeout(() => {
-             window.scrollTo({ top: 0, behavior: 'smooth' });
-           }, 100);
-        }, 50);
-      }
     }
   };
 

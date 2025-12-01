@@ -1,16 +1,28 @@
 import { Category } from './types';
-import { MessageCircle, Send, Facebook, Instagram } from 'lucide-react';
+import { 
+  MessageCircle, 
+  Send, 
+  GraduationCap, 
+  Globe, 
+  Lightbulb, 
+  RefreshCw, 
+  ShoppingCart, 
+  Palette, 
+  Rocket, 
+  Bot, 
+  Handshake 
+} from 'lucide-react';
 
 export const CATEGORIES = [
-  { id: Category.BitcoinEducation, icon: "🎓", label: "Bitcoin Education" },
-  { id: Category.BitcoinAdoption, icon: "🌍", label: "Bitcoin Adoption" },
-  { id: Category.BitcoinInnovation, icon: "💡", label: "Bitcoin Innovation" },
-  { id: Category.BitcoinCircularEconomy, icon: "🔄", label: "Bitcoin Circular Economy" },
-  { id: Category.Merchants, icon: "🛒", label: "Merchants (Pay With Bitcoin)" },
-  { id: Category.BrandingLogos, icon: "🎨", label: "Branding & Logos" },
-  { id: Category.Entrepreneurship, icon: "🚀", label: "Entrepreneurship & Startups" },
-  { id: Category.AIProductivity, icon: "🤖", label: "AI Productivity" },
-  { id: Category.PersonalMentorship, icon: "🤝", label: "Personal Mentorship" },
+  { id: Category.BitcoinEducation, icon: GraduationCap, label: "Bitcoin Education" },
+  { id: Category.BitcoinAdoption, icon: Globe, label: "Bitcoin Adoption" },
+  { id: Category.BitcoinInnovation, icon: Lightbulb, label: "Bitcoin Innovation" },
+  { id: Category.BitcoinCircularEconomy, icon: RefreshCw, label: "Bitcoin Circular Economy" },
+  { id: Category.Merchants, icon: ShoppingCart, label: "Merchants (Pay With Bitcoin)" },
+  { id: Category.BrandingLogos, icon: Palette, label: "Branding & Logos" },
+  { id: Category.Entrepreneurship, icon: Rocket, label: "Entrepreneurship & Startups" },
+  { id: Category.AIProductivity, icon: Bot, label: "AI Productivity" },
+  { id: Category.PersonalMentorship, icon: Handshake, label: "Personal Mentorship" },
 ];
 
 export const OFFICIAL_NUMBERS = [
@@ -33,37 +45,23 @@ export const SOCIAL_PLATFORMS = [
     name: "Telegram",
     icon: Send,
     color: "bg-blue-500 hover:bg-blue-600",
-    // Uses window.location.origin to share the current URL (e.g., the specific Vercel deployment)
-    getLink: (msg: string) => `https://t.me/share/url?url=${encodeURIComponent(window.location.origin)}&text=${encodeURIComponent(msg)}`
-  },
-  {
-    name: "Facebook",
-    icon: Facebook,
-    color: "bg-blue-700 hover:bg-blue-800",
-    // HTTPS link for Messenger
-    getLink: (msg: string) => `https://m.me/?text=${encodeURIComponent(msg)}` 
-  },
-  {
-    name: "Instagram",
-    icon: Instagram,
-    color: "bg-pink-600 hover:bg-pink-700",
-    // Instagram doesn't support pre-filled DM links via web URL effectively without deep linking.
-    // We will copy to clipboard and open IG.
-    getLink: (_msg: string) => `https://instagram.com/`
+    // Open direct chat with Mutonga. MessageReview component handles the copy-to-clipboard.
+    getLink: (_msg: string) => `https://t.me/mutonganakamoto`
   }
 ];
 
 export const TIME_SLOTS: string[] = [];
-// Generate slots from 8:00 AM to 8:00 PM
-let startHour = 8;
-const endHour = 20; // 8 PM
+// Generate slots for 24 hours
+let startHour = 0;
+const endHour = 23;
 while (startHour <= endHour) {
   const ampm = startHour >= 12 ? 'PM' : 'AM';
-  const displayHour = startHour > 12 ? startHour - 12 : startHour;
+  const displayHour = startHour === 0 ? 12 : (startHour > 12 ? startHour - 12 : startHour);
+  const displayHourStr = displayHour.toString();
   
-  TIME_SLOTS.push(`${displayHour}:00 ${ampm}`);
-  if (startHour !== endHour) {
-    TIME_SLOTS.push(`${displayHour}:30 ${ampm}`);
+  TIME_SLOTS.push(`${displayHourStr}:00 ${ampm}`);
+  if (startHour !== endHour || (startHour === endHour && 30 < 60)) {
+    TIME_SLOTS.push(`${displayHourStr}:30 ${ampm}`);
   }
   startHour++;
 }

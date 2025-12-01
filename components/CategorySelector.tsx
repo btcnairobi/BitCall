@@ -26,9 +26,9 @@ export const CategorySelector: React.FC<CategorySelectorProps> = ({ selected, on
              <div className="absolute top-2 right-2 w-3 h-3 bg-bitcoin rounded-full border border-black animate-pulse" />
           )}
           
-          <span className="text-4xl mb-3 text-bitcoin drop-shadow-sm group-hover:scale-110 transition-transform duration-200">
-            {cat.icon}
-          </span>
+          <div className="mb-3 text-bitcoin drop-shadow-sm group-hover:scale-110 transition-transform duration-200">
+            <cat.icon size={48} strokeWidth={1.5} />
+          </div>
           <span className={clsx(
             "font-black text-center text-lg leading-tight",
             selected === cat.id ? "text-black" : "text-black group-hover:text-gray-800"
